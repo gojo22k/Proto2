@@ -1,4 +1,4 @@
-pyrogram<=2.0.33
+pyrogram==1.4.16
 tgcrypto<=1.2.3
 aiohttp==3.9.5
 python-dotenv<=0.20.0
@@ -8,7 +8,7 @@ dnspython==2.6.1
 apscheduler==3.10.4
 requests==2.32.3
 psutil==6.0.0
-pyromod==3.1.6
+pyromod
 cython==3.0.10
 attrs>=17.3.0
 charset-normalizer<3.0,>=2.0
