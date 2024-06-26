@@ -16,7 +16,7 @@ from Adarsh.bot.clients import initialize_clients
 import pyrogram.errors
 import ntplib
 
-logging.basic_config(
+logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
