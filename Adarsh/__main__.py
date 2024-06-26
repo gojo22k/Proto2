@@ -13,7 +13,6 @@ from aiohttp import web
 from .server import web_server
 from .utils.keepalive import ping_server
 from Adarsh.bot.clients import initialize_clients
-import pyrogram.errors
 import ntplib
 
 logging.basicConfig(
