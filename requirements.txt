@@ -26,3 +26,4 @@ urllib3<3,>=1.21.1
 certifi>=2017.4.17
 pyaes==1.6.1
 pysocks==1.7.1
+ntplib
