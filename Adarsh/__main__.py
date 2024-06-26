@@ -14,9 +14,9 @@ from .server import web_server
 from .utils.keepalive import ping_server
 from Adarsh.bot.clients import initialize_clients
 import pyrogram.errors
-import pyrogram.raw.functions
+import ntplib
 
-logging.basicConfig(
+logging.basic_config(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
@@ -29,21 +29,15 @@ files = glob.glob(ppath)
 StreamBot.start()
 loop = asyncio.get_event_loop()
 
-async def sync_time():
-    while True:
-        try:
-            await StreamBot.connect()
-            await StreamBot.send(pyrogram.raw.functions.Ping(ping_id=0))
-            break
-        except pyrogram.errors.BadMsgNotification:
-            await asyncio.sleep(1)
-        finally:
-            await StreamBot.disconnect()
+def sync_time_ntp():
+    client = ntplib.NTPClient()
+    response = client.request('pool.ntp.org')
+    os.system(f'date -s @{response.tx_time}')
 
 async def start_services():
     print('\n')
-    print('------------------- Synchronizing Client Time -------------------')
-    await sync_time()
+    print('------------------- Synchronizing System Time -------------------')
+    sync_time_ntp()
     print('------------------- Initializing Telegram Bot -------------------')
     bot_info = await StreamBot.get_me()
     StreamBot.username = bot_info.username
