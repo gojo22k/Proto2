@@ -14,6 +14,7 @@ from .server import web_server
 from .utils.keepalive import ping_server
 from Adarsh.bot.clients import initialize_clients
 import ntplib
+import time
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,18 +26,26 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 
 ppath = "Adarsh/bot/plugins/*.py"
 files = glob.glob(ppath)
-StreamBot.start()
-loop = asyncio.get_event_loop()
 
 def sync_time_ntp():
-    client = ntplib.NTPClient()
-    response = client.request('pool.ntp.org')
-    os.system(f'date -s @{response.tx_time}')
+    try:
+        client = ntplib.NTPClient()
+        response = client.request('pool.ntp.org')
+        current_time = response.tx_time
+        time_offset = current_time - time.time()
+        return time_offset
+    except Exception as e:
+        logging.error(f"Error syncing time: {e}")
+        return 0
+
+time_offset = sync_time_ntp()
+
+StreamBot.start()
+loop = asyncio.get_event_loop()
 
 async def start_services():
     print('\n')
     print('------------------- Synchronizing System Time -------------------')
-    sync_time_ntp()
     print('------------------- Initializing Telegram Bot -------------------')
     bot_info = await StreamBot.get_me()
     StreamBot.username = bot_info.username
