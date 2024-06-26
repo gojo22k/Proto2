@@ -26,18 +26,23 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 ppath = "Adarsh/bot/plugins/*.py"
 files = glob.glob(ppath)
 
-def sync_time_ntp():
+def sync_time():
     try:
         client = ntplib.NTPClient()
         response = client.request('pool.ntp.org')
-        current_time = response.tx_time
-        time_offset = current_time - time.time()
-        return time_offset
+        ntp_time = response.tx_time
+        current_time = time.time()
+        time_offset = ntp_time - current_time
+        if abs(time_offset) > 1:
+            print(f"System time is off by {time_offset} seconds. Adjusting...")
+            os.system(f'date -s "@{ntp_time}"')
+        else:
+            print("System time is synchronized.")
     except Exception as e:
-        logging.error(f"Error syncing time: {e}")
-        return 0
+        print(f"Failed to synchronize time: {e}")
 
-time_offset = sync_time_ntp()
+# Synchronize time before starting the bot
+sync_time()
 
 StreamBot.start()
 loop = asyncio.get_event_loop()
