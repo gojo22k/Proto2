@@ -13,6 +13,8 @@ from aiohttp import web
 from .server import web_server
 from .utils.keepalive import ping_server
 from Adarsh.bot.clients import initialize_clients
+import pyrogram.errors
+import pyrogram.raw.functions
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,10 +29,22 @@ files = glob.glob(ppath)
 StreamBot.start()
 loop = asyncio.get_event_loop()
 
+async def sync_time():
+    while True:
+        try:
+            await StreamBot.connect()
+            await StreamBot.send(pyrogram.raw.functions.Ping(ping_id=0))
+            break
+        except pyrogram.errors.BadMsgNotification:
+            await asyncio.sleep(1)
+        finally:
+            await StreamBot.disconnect()
 
 async def start_services():
     print('\n')
-    print('------------------- Initalizing Telegram Bot -------------------')
+    print('------------------- Synchronizing Client Time -------------------')
+    await sync_time()
+    print('------------------- Initializing Telegram Bot -------------------')
     bot_info = await StreamBot.get_me()
     StreamBot.username = bot_info.username
     print("------------------------------ DONE ------------------------------")
@@ -57,27 +71,27 @@ async def start_services():
         print("------------------ Starting Keep Alive Service ------------------")
         print()
         asyncio.create_task(ping_server())
-    print('-------------------- Initalizing Web Server -------------------------')
+    print('-------------------- Initializing Web Server -------------------------')
     app = web.AppRunner(await web_server())
     await app.setup()
     bind_address = "0.0.0.0" if Var.ON_HEROKU else Var.BIND_ADRESS
     await web.TCPSite(app, bind_address, Var.PORT).start()
-    print('----------------------------- DONE ---------------------------------------------------------------------')
+    print('----------------------------- DONE ---------------------------------------')
     print('\n')
-    print('---------------------------------------------------------------------------------------------------------')
-    print('---------------------------------------------------------------------------------------------------------')
-    print('Join https://t.me/selfiebd  to follow me for new bots')
-    print('---------------------------------------------------------------------------------------------------------')
+    print('----------------------------------------------------------------------------')
+    print('----------------------------------------------------------------------------')
+    print('Join https://t.me/selfiebd to follow me for new bots')
+    print('----------------------------------------------------------------------------')
     print('\n')
-    print('----------------------- Service Started -----------------------------------------------------------------')
+    print('----------------------- Service Started -----------------------------------')
     print('                        bot =>> {}'.format((await StreamBot.get_me()).first_name))
     print('                        server ip =>> {}:{}'.format(bind_address, Var.PORT))
     print('                        Owner =>> {}'.format((Var.OWNER_USERNAME)))
     if Var.ON_HEROKU:
-        print('                        app runnng on =>> {}'.format(Var.FQDN))
-    print('---------------------------------------------------------------------------------------------------------')
-    print('Give a star to my repo https://github.com/Selfie-bd/Filetolinkdcbot  also follow me for new bots')
-    print('---------------------------------------------------------------------------------------------------------')
+        print('                        app running on =>> {}'.format(Var.FQDN))
+    print('----------------------------------------------------------------------------')
+    print('Give a star to my repo https://github.com/Selfie-bd/Filetolinkdcbot also follow me for new bots')
+    print('----------------------------------------------------------------------------')
     await idle()
 
 if __name__ == '__main__':
